@@ -45,7 +45,7 @@ UART_HandleTypeDef hlpuart1;
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-
+//Variable
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
