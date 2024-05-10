@@ -47,7 +47,8 @@ SPI_HandleTypeDef hspi3;
 TIM_HandleTypeDef htim2;
 
 /* USER CODE BEGIN PV */
-//Variable
+uint8_t SPIRx[10];
+uint8_t SPITx[10];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,7 +98,7 @@ int main(void)
   MX_TIM2_Init();
   MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
-
+  SPITxRx_Setup();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -107,7 +108,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+	  SPITxRx_readIO();
+	  }
   /* USER CODE END 3 */
 }
 
@@ -331,7 +333,31 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void SPITxRx_Setup()
+{
+//CS pulse
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
+HAL_Delay(1);
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); // CS deSelect
+HAL_Delay(1);
+}
 
+void SPITxRx_readIO()
+{
+if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_2))
+{
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
+SPITx[0] = 0b01000001;
+SPITx[1] = 0x12;
+SPITx[2] = 0;
+SPITx[3] = 0;
+HAL_SPI_TransmitReceive_IT(&hspi3, SPITx, SPIRx, 4);
+}
+}
+void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); //CS dnSelect
+}
 /* USER CODE END 4 */
 
 /**
