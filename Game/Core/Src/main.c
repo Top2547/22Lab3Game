@@ -55,6 +55,7 @@ uint8_t SPITx[10];
 uint8_t Mode;
 uint8_t Switch = 1;
 uint8_t LMode1 = 1;
+int Random_Number ;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -112,9 +113,10 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  //SPITxRx_Setup();
+  SPITxRx_Setup();
   IODIRB_Setup();
-  HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_Base_Start_IT(&htim3); //Control LED 1Hz
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -126,6 +128,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  SPITxRx_readIO();
 	  ReadSwitch();
+	  Random_Number = HAL_GetTick()%5;
 	  }
   /* USER CODE END 3 */
 }
@@ -376,7 +379,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 16999;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 499;
+  htim3.Init.Period = 9999;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -453,14 +456,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-//void SPITxRx_Setup()
-//{
-////CS pulse
-//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
-//HAL_Delay(1);
-//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); // CS deSelect
-//HAL_Delay(1);
-//}
+void SPITxRx_Setup()
+{
+//CS pulse
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
+HAL_Delay(1);
+HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); // CS deSelect
+HAL_Delay(1);
+}
 
 void IODIRB_Setup()//at BEGIN 2
 {
