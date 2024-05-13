@@ -8,8 +8,7 @@
 ../Core/Src/main.c:423:13:MX_GPIO_Init	1
 ../Core/Src/main.c:480:6:IODIRB_Setup	1
 ../Core/Src/main.c:489:6:SPITxRx_readIO	4
-../Core/Src/main.c:509:6:ReadSwitch	6
-../Core/Src/main.c:560:6:Game	10
-../Core/Src/main.c:745:6:HAL_TIM_PeriodElapsedCallback	3
-../Core/Src/main.c:757:6:HAL_SPI_TxRxCpltCallback	2
-../Core/Src/main.c:772:6:Error_Handler	1
+../Core/Src/main.c:560:6:Game	15
+../Core/Src/main.c:776:6:HAL_TIM_PeriodElapsedCallback	3
+../Core/Src/main.c:788:6:HAL_SPI_TxRxCpltCallback	2
+../Core/Src/main.c:803:6:Error_Handler	1

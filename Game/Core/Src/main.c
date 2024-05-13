@@ -138,7 +138,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  SPITxRx_readIO();
-	  ReadSwitch();
+	  //ReadSwitch();
 	  Game();
 	  //Time = HAL_GetTick();
 	  }
@@ -506,7 +506,58 @@ void SPITxRx_readIO()
 }
 
 
-void ReadSwitch()
+//void ReadSwitch()
+//{
+//	if (State == 1)
+//		{
+//			if (SPIRx[2]==239)
+//				{
+//				Pattern_Check[Numcheck_Count] = 1;
+//				Numcheck_Count = Numcheck_Count + 1;
+//				State = 0;
+//				Switch = 1;
+//				}
+//			else if (SPIRx[2]==223)
+//				{
+//				Pattern_Check[Numcheck_Count] = 2;
+//				Numcheck_Count = Numcheck_Count + 1;
+//				State = 0;
+//				Switch = 2;
+//				}
+//			else if (SPIRx[2]==176)
+//				{
+//				Pattern_Check[Numcheck_Count] = 3;
+//				Numcheck_Count = Numcheck_Count + 1;
+//				State = 0;
+//				Switch = 3;
+//				}
+//			else if (SPIRx[2]==127)
+//				{
+//				Pattern_Check[Numcheck_Count] = 4;
+//				Numcheck_Count = Numcheck_Count + 1;
+//				State = 0;
+//				Switch = 4;
+//				}
+//		}
+	//	if (SPIRx[2]==239)
+	//			{
+	//				Switch = 1;
+	//			}
+	//		else if (SPIRx[2]==223)
+	//			{
+	//				Switch = 2;
+	//			}
+	//		else if (SPIRx[2]==176)
+	//			{
+	//				Switch = 3;
+	//			}
+	//		else if (SPIRx[2]==127)
+	//			{
+	//				Switch = 4;
+	//			}
+//}
+
+void Game()
 {
 	if (State == 1)
 		{
@@ -539,26 +590,6 @@ void ReadSwitch()
 				Switch = 4;
 				}
 		}
-	//	if (SPIRx[2]==239)
-	//			{
-	//				Switch = 1;
-	//			}
-	//		else if (SPIRx[2]==223)
-	//			{
-	//				Switch = 2;
-	//			}
-	//		else if (SPIRx[2]==176)
-	//			{
-	//				Switch = 3;
-	//			}
-	//		else if (SPIRx[2]==127)
-	//			{
-	//				Switch = 4;
-	//			}
-}
-
-void Game()
-{
 	if (Switch == 1)
 			{
 				SPITx[0] = 0b01000000;//write
