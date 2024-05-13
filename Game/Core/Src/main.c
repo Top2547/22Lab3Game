@@ -51,19 +51,19 @@ TIM_HandleTypeDef htim3;
 /* USER CODE BEGIN PV */
 uint8_t SPIRx[10];
 uint8_t SPITx[10];
-
 uint8_t Mode;
 uint8_t Switch = 1;
 uint8_t LMode1 = 1;
-//int Time;
-//uint32_t Random_Number[50] = {3,4,2,3,2,3,1,4,2,3,1,2,3,4,2,3,2,1,4,2,3,1,4,2,3,4,1,2,3,2,1,2,3,4,3,2,3,4,3,2,1,4,3,4,2,4,1,4,3,2} ;
-//int i = 0;
-//int Pattern_Count = 0;
-//uint32_t Pattern_Sol[50]; //correct pattern
-//uint32_t Pattern_Check[50]; //pattern you play
-//int State ; //0 for display 1 for play
-//int Numcheck_Count; // to check if you trick all the button
-//int test;
+
+int Time;
+uint32_t Random_Number[50] = {3,4,2,3,2,3,1,4,2,3,1,2,3,4,2,3,2,1,4,2,3,1,4,2,3,4,1,2,3,2,1,2,3,4,3,2,3,4,3,2,1,4,3,4,2,4,1,4,3,2} ;
+int i = 0;
+int Pattern_Count = 0;
+uint32_t Pattern_Sol[50]; //correct pattern
+uint32_t Pattern_Check[50]; //pattern you play
+int State ; //0 for display 1 for play
+int Numcheck_Count; // to check if you trick all the button
+int test;
 
 /* USER CODE END PV */
 
@@ -123,9 +123,10 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  //SPITxRx_Setup();
-  IODIRB_Setup();
-  HAL_TIM_Base_Start_IT(&htim3); //Control LED 1Hz
+  //  SPITxRx_Setup();//for mode 1,1
+    IODIRB_Setup();
+    HAL_TIM_Base_Start_IT(&htim3);
+
 
   /* USER CODE END 2 */
 
@@ -136,10 +137,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  //SPITxRx_readIO();
+	  SPITxRx_readIO();
 	  ReadSwitch();
 	  Game();
-	  Time = HAL_GetTick();
+	  //Time = HAL_GetTick();
 	  }
   /* USER CODE END 3 */
 }
@@ -507,53 +508,53 @@ void SPITxRx_readIO()
 
 void ReadSwitch()
 {
-	if (SPIRx[2]==239)
-			{
+	if (State == 1)
+		{
+			if (SPIRx[2]==239)
+				{
+				Pattern_Check[Numcheck_Count] = 1;
+				Numcheck_Count = Numcheck_Count + 1;
+				State = 0;
 				Switch = 1;
-			}
-		else if (SPIRx[2]==223)
-			{
+				}
+			else if (SPIRx[2]==223)
+				{
+				Pattern_Check[Numcheck_Count] = 2;
+				Numcheck_Count = Numcheck_Count + 1;
+				State = 0;
 				Switch = 2;
-			}
-		else if (SPIRx[2]==176)
-			{
+				}
+			else if (SPIRx[2]==176)
+				{
+				Pattern_Check[Numcheck_Count] = 3;
+				Numcheck_Count = Numcheck_Count + 1;
+				State = 0;
 				Switch = 3;
-			}
-		else if (SPIRx[2]==127)
-			{
+				}
+			else if (SPIRx[2]==127)
+				{
+				Pattern_Check[Numcheck_Count] = 4;
+				Numcheck_Count = Numcheck_Count + 1;
+				State = 0;
 				Switch = 4;
-			}
-//	if (State == 1)
-//		{
-//			if (SPIRx[2]==239)
-//				{
-//				Pattern_Check[Pattern_Count] = 1;
-//				Numcheck_Count = Numcheck_Count + 1;
-//				State = 0;
-//				Switch = 1;
-//				}
-//			else if (SPIRx[2]==223)
-//				{
-//				Pattern_Check[Pattern_Count] = 2;
-//				Numcheck_Count = Numcheck_Count + 1;
-//				State = 0;
-//				Switch = 2;
-//				}
-//			else if (SPIRx[2]==176)
-//				{
-//				Pattern_Check[Pattern_Count] = 3;
-//				Numcheck_Count = Numcheck_Count + 1;
-//				State = 0;
-//				Switch = 3;
-//				}
-//			else if (SPIRx[2]==127)
-//				{
-//				Pattern_Check[Pattern_Count] = 4;
-//				Numcheck_Count = Numcheck_Count + 1;
-//				State = 0;
-//				Switch = 4;
-//				}
-//		}
+				}
+		}
+	//	if (SPIRx[2]==239)
+	//			{
+	//				Switch = 1;
+	//			}
+	//		else if (SPIRx[2]==223)
+	//			{
+	//				Switch = 2;
+	//			}
+	//		else if (SPIRx[2]==176)
+	//			{
+	//				Switch = 3;
+	//			}
+	//		else if (SPIRx[2]==127)
+	//			{
+	//				Switch = 4;
+	//			}
 }
 
 void Game()
@@ -565,7 +566,6 @@ void Game()
 				if (LMode1 == 1)
 					{
 					SPITx[2] = 0b11111110;
-					test = 7;
 					}
 				else if (LMode1 == 2)
 					{
@@ -582,7 +582,6 @@ void Game()
 				else if (LMode1 == 5)
 					{
 					SPITx[2] = 0b11101111;
-					test = 10;
 					}
 				else if (LMode1 == 6)
 					{
@@ -597,7 +596,6 @@ void Game()
 					SPITx[2] = 0b01111111;
 					}
 			}
-
 //	SPITx[0] = 0b01000000;//write
 //	SPITx[1] = 0x15;//OLATB
 //	Pattern_Sol[Pattern_Count] = Random_Number[Pattern_Count];
