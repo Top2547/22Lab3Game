@@ -55,13 +55,15 @@ uint8_t SPITx[10];
 uint8_t Mode;
 uint8_t Switch = 1;
 uint8_t LMode1 = 1;
-int Time;
-uint32_t Random_Number[50] = {3,4,2,3,2,3,1,4,2,3,1,2,3,4,2,3,2,1,4,2,3,1,4,2,3,4,1,2,3,2,1,2,3,4,3,2,3,4,3,2,1,4,3,4,2,4,1,4,3,2} ;
-int i;
-int Pattern_Count;
-uint32_t Pattern_Sol[50];
-uint32_t Pattern_Check[50];
-int State ; //0 for display 1 for play
+//int Time;
+//uint32_t Random_Number[50] = {3,4,2,3,2,3,1,4,2,3,1,2,3,4,2,3,2,1,4,2,3,1,4,2,3,4,1,2,3,2,1,2,3,4,3,2,3,4,3,2,1,4,3,4,2,4,1,4,3,2} ;
+//int i = 0;
+//int Pattern_Count = 0;
+//uint32_t Pattern_Sol[50]; //correct pattern
+//uint32_t Pattern_Check[50]; //pattern you play
+//int State ; //0 for display 1 for play
+//int Numcheck_Count; // to check if you trick all the button
+//int test;
 
 /* USER CODE END PV */
 
@@ -121,7 +123,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  SPITxRx_Setup();
+  //SPITxRx_Setup();
   IODIRB_Setup();
   HAL_TIM_Base_Start_IT(&htim3); //Control LED 1Hz
 
@@ -134,10 +136,10 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  SPITxRx_readIO();
+	  //SPITxRx_readIO();
 	  ReadSwitch();
 	  Game();
-	  Time = HAL_GetTick()%4;
+	  Time = HAL_GetTick();
 	  }
   /* USER CODE END 3 */
 }
@@ -465,14 +467,14 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void SPITxRx_Setup()
-{
-//CS pulse
-HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
-HAL_Delay(1);
-HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); // CS deSelect
-HAL_Delay(1);
-}
+//void SPITxRx_Setup()
+//{
+////CS pulse
+//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
+//HAL_Delay(1);
+//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); // CS deSelect
+//HAL_Delay(1);
+//}
 
 void IODIRB_Setup()//at BEGIN 2
 {
@@ -502,46 +504,13 @@ void SPITxRx_readIO()
 	}
 }
 
+
 void ReadSwitch()
 {
 	if (SPIRx[2]==239)
-		{
-			Switch = 1;
-		}
-	else if (SPIRx[2]==223)
-		{
-			Switch = 2;
-		}
-	else if (SPIRx[2]==176)
-		{
-			Switch = 3;
-		}
-	else if (SPIRx[2]==127)
-		{
-			Switch = 4;
-		}
-}
-
-void Game()
-{
-	SPITx[0] = 0b01000000;//write
-	SPITx[1] = 0x15;//OLATB
-	Pattern_Sol[Pattern_Count] = Random_Number[Pattern_Control];
-	if (State == 0);
-	{
-		for (i=1;i<Pattern_Count;i++)
-		{
-			SPITx[2] = 0b11111110;
-			HAL_Delay(1000);
-		}
-		State = 1;
-	}
-	else if (State == 1);
-	{
-		if (SPIRx[2]==239)
-				{
+			{
 				Switch = 1;
-				}
+			}
 		else if (SPIRx[2]==223)
 			{
 				Switch = 2;
@@ -554,11 +523,146 @@ void Game()
 			{
 				Switch = 4;
 			}
-	}
-	Pattern_Count = Pattern_Count + 1;
-	//HAL_Delay(1000);
+//	if (State == 1)
+//		{
+//			if (SPIRx[2]==239)
+//				{
+//				Pattern_Check[Pattern_Count] = 1;
+//				Numcheck_Count = Numcheck_Count + 1;
+//				State = 0;
+//				Switch = 1;
+//				}
+//			else if (SPIRx[2]==223)
+//				{
+//				Pattern_Check[Pattern_Count] = 2;
+//				Numcheck_Count = Numcheck_Count + 1;
+//				State = 0;
+//				Switch = 2;
+//				}
+//			else if (SPIRx[2]==176)
+//				{
+//				Pattern_Check[Pattern_Count] = 3;
+//				Numcheck_Count = Numcheck_Count + 1;
+//				State = 0;
+//				Switch = 3;
+//				}
+//			else if (SPIRx[2]==127)
+//				{
+//				Pattern_Check[Pattern_Count] = 4;
+//				Numcheck_Count = Numcheck_Count + 1;
+//				State = 0;
+//				Switch = 4;
+//				}
+//		}
 }
 
+void Game()
+{
+	if (Switch == 1)
+			{
+				SPITx[0] = 0b01000000;//write
+				SPITx[1] = 0x15;//OLATB
+				if (LMode1 == 1)
+					{
+					SPITx[2] = 0b11111110;
+					test = 7;
+					}
+				else if (LMode1 == 2)
+					{
+					SPITx[2] = 0b11111101;
+					}
+				else if (LMode1 == 3)
+					{
+					SPITx[2] = 0b11111011;
+					}
+				else if (LMode1 == 4)
+					{
+					SPITx[2] = 0b11110111;
+					}
+				else if (LMode1 == 5)
+					{
+					SPITx[2] = 0b11101111;
+					test = 10;
+					}
+				else if (LMode1 == 6)
+					{
+					SPITx[2] = 0b11011111;
+					}
+				else if (LMode1 == 7)
+					{
+					SPITx[2] = 0b10111111;
+					}
+				else if (LMode1 == 8)
+					{
+					SPITx[2] = 0b01111111;
+					}
+			}
+
+//	SPITx[0] = 0b01000000;//write
+//	SPITx[1] = 0x15;//OLATB
+//	Pattern_Sol[Pattern_Count] = Random_Number[Pattern_Count];
+//	if (State == 0)
+//	{
+//		for (i=0;i<=Pattern_Count+1;1)
+//		{
+//			if (Random_Number[i] == 1)
+//			{
+//				SPITx[2] = 0b11111011;
+//				HAL_Delay(1000);
+//				State = 1;
+//			}
+//			else if (Random_Number[i] == 2)
+//			{
+//				SPITx[2] = 0b11110111;
+//				HAL_Delay(1000);
+//				State = 1;
+//			}
+//			else if (Random_Number[i] == 3)
+//			{
+//				SPITx[2] = 0b11101111;
+//				HAL_Delay(1000);
+//				State = 1;
+//			}
+//			else if (Random_Number[i] == 4)
+//			{
+//				SPITx[2] = 0b11011111;
+//				HAL_Delay(1000);
+//				State = 1;
+//			}
+//		}
+//		SPITx[2] = 0b00111100;
+//
+//	}
+//    if (State == 1)
+//	{
+//		if (SPIRx[2]==239)
+//			{
+//			Pattern_Check[Pattern_Count] = 1;
+//			Numcheck_Count = Numcheck_Count + 1;
+//			State = 0;
+//			}
+//		else if (SPIRx[2]==223)
+//			{
+//			Pattern_Check[Pattern_Count] = 2;
+//			Numcheck_Count = Numcheck_Count + 1;
+//			State = 0;
+//			}
+//		else if (SPIRx[2]==176)
+//			{
+//			Pattern_Check[Pattern_Count] = 3;
+//			Numcheck_Count = Numcheck_Count + 1;
+//			State = 0;
+//			}
+//		else if (SPIRx[2]==127)
+//			{
+//			Pattern_Check[Pattern_Count] = 4;
+//			Numcheck_Count = Numcheck_Count + 1;
+//			State = 0;
+//			}
+//		Pattern_Count = Pattern_Count + 1;
+//	}
+	//HAL_Delay(1000);
+}
 
 //void LED_From()
 //{
