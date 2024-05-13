@@ -55,7 +55,14 @@ uint8_t SPITx[10];
 uint8_t Mode;
 uint8_t Switch = 1;
 uint8_t LMode1 = 1;
-int Random_Number ;
+int Time;
+uint32_t Random_Number[50] = {3,4,2,3,2,3,1,4,2,3,1,2,3,4,2,3,2,1,4,2,3,1,4,2,3,4,1,2,3,2,1,2,3,4,3,2,3,4,3,2,1,4,3,4,2,4,1,4,3,2} ;
+int i;
+int Pattern_Count;
+uint32_t Pattern_Sol[50];
+uint32_t Pattern_Check[50];
+int State ; //0 for display 1 for play
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -72,6 +79,7 @@ void SPITxRx_readIO();
 void IODIRB_Setup();
 void ReadSwitch();
 void LED_From();
+void Game();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -128,7 +136,8 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  SPITxRx_readIO();
 	  ReadSwitch();
-	  Random_Number = HAL_GetTick()%5;
+	  Game();
+	  Time = HAL_GetTick()%4;
 	  }
   /* USER CODE END 3 */
 }
@@ -487,7 +496,7 @@ void SPITxRx_readIO()
 		}
 		else if(Mode == 1)
 		{
-			LED_From();
+			Game();
 		}
 		HAL_SPI_TransmitReceive_IT(&hspi3, SPITx, SPIRx, 3);
 	}
@@ -513,84 +522,122 @@ void ReadSwitch()
 		}
 }
 
-void LED_From()
+void Game()
 {
-	if (Switch == 1)
+	SPITx[0] = 0b01000000;//write
+	SPITx[1] = 0x15;//OLATB
+	Pattern_Sol[Pattern_Count] = Random_Number[Pattern_Control];
+	if (State == 0);
+	{
+		for (i=1;i<Pattern_Count;i++)
 		{
-			SPITx[0] = 0b01000000;//write
-			SPITx[1] = 0x15;//OLATB
-			if (LMode1 == 1)
-				{
-				SPITx[2] = 0b11111110;
-				}
-			else if (LMode1 == 2)
-				{
-				SPITx[2] = 0b11111101;
-				}
-			else if (LMode1 == 3)
-				{
-				SPITx[2] = 0b11111011;
-				}
-			else if (LMode1 == 4)
-				{
-				SPITx[2] = 0b11110111;
-				}
-			else if (LMode1 == 5)
-				{
-				SPITx[2] = 0b11101111;
-				}
-			else if (LMode1 == 6)
-				{
-				SPITx[2] = 0b11011111;
-				}
-			else if (LMode1 == 7)
-				{
-				SPITx[2] = 0b10111111;
-				}
-			else if (LMode1 == 8)
-				{
-				SPITx[2] = 0b01111111;
-				}
+			SPITx[2] = 0b11111110;
+			HAL_Delay(1000);
 		}
-		else if (Switch == 2)
-		{
-			SPITx[0] = 0b01000000;//write
-			SPITx[1] = 0x15;//OLATB
-			if (LMode1 == 1)
+		State = 1;
+	}
+	else if (State == 1);
+	{
+		if (SPIRx[2]==239)
 				{
-				SPITx[2] = 0b00000001;
+				Switch = 1;
 				}
-			else if (LMode1 == 2)
-				{
-				SPITx[2] = 0b00000010;
-				}
-			else if (LMode1 == 3)
-				{
-				SPITx[2] = 0b00000100;
-				}
-			else if (LMode1 == 4)
-				{
-				SPITx[2] = 0b00001000;
-				}
-			else if (LMode1 == 5)
-				{
-				SPITx[2] = 0b00010000;
-				}
-			else if (LMode1 == 6)
-				{
-				SPITx[2] = 0b00100000;
-				}
-			else if (LMode1 == 7)
-				{
-				SPITx[2] = 0b01000000;
-				}
-			else if (LMode1 == 8)
-				{
-				SPITx[2] = 0b10000000;
-				}
-		}
-
+		else if (SPIRx[2]==223)
+			{
+				Switch = 2;
+			}
+		else if (SPIRx[2]==176)
+			{
+				Switch = 3;
+			}
+		else if (SPIRx[2]==127)
+			{
+				Switch = 4;
+			}
+	}
+	Pattern_Count = Pattern_Count + 1;
+	//HAL_Delay(1000);
 }
+
+
+//void LED_From()
+//{
+//	if (Switch == 1)
+//		{
+//			SPITx[0] = 0b01000000;//write
+//			SPITx[1] = 0x15;//OLATB
+//			if (LMode1 == 1)
+//				{
+//				SPITx[2] = 0b11111110;
+//				}
+//			else if (LMode1 == 2)
+//				{
+//				SPITx[2] = 0b11111101;
+//				}
+//			else if (LMode1 == 3)
+//				{
+//				SPITx[2] = 0b11111011;
+//				}
+//			else if (LMode1 == 4)
+//				{
+//				SPITx[2] = 0b11110111;
+//				}
+//			else if (LMode1 == 5)
+//				{
+//				SPITx[2] = 0b11101111;
+//				}
+//			else if (LMode1 == 6)
+//				{
+//				SPITx[2] = 0b11011111;
+//				}
+//			else if (LMode1 == 7)
+//				{
+//				SPITx[2] = 0b10111111;
+//				}
+//			else if (LMode1 == 8)
+//				{
+//				SPITx[2] = 0b01111111;
+//				}
+//		}
+//		else if (Switch == 2)
+//		{
+//			SPITx[0] = 0b01000000;//write
+//			SPITx[1] = 0x15;//OLATB
+//			if (LMode1 == 1)
+//				{
+//				SPITx[2] = 0b00000001;
+//				}
+//			else if (LMode1 == 2)
+//				{
+//				SPITx[2] = 0b00000010;
+//				}
+//			else if (LMode1 == 3)
+//				{
+//				SPITx[2] = 0b00000100;
+//				}
+//			else if (LMode1 == 4)
+//				{
+//				SPITx[2] = 0b00001000;
+//				}
+//			else if (LMode1 == 5)
+//				{
+//				SPITx[2] = 0b00010000;
+//				}
+//			else if (LMode1 == 6)
+//				{
+//				SPITx[2] = 0b00100000;
+//				}
+//			else if (LMode1 == 7)
+//				{
+//				SPITx[2] = 0b01000000;
+//				}
+//			else if (LMode1 == 8)
+//				{
+//				SPITx[2] = 0b10000000;
+//				}
+//		}
+//
+//}
 
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
