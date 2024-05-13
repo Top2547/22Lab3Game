@@ -44,11 +44,17 @@ UART_HandleTypeDef hlpuart1;
 
 SPI_HandleTypeDef hspi3;
 
+TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 uint8_t SPIRx[10];
 uint8_t SPITx[10];
+
+uint8_t Mode;
+uint8_t Switch = 1;
+uint8_t LMode1 = 1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,8 +63,14 @@ static void MX_GPIO_Init(void);
 static void MX_LPUART1_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_SPI3_Init(void);
+static void MX_TIM1_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
-
+void SPITxRx_Setup();
+void SPITxRx_readIO();
+void IODIRB_Setup();
+void ReadSwitch();
+void LED_From();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -97,8 +109,12 @@ int main(void)
   MX_LPUART1_UART_Init();
   MX_TIM2_Init();
   MX_SPI3_Init();
+  MX_TIM1_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  SPITxRx_Setup();
+  //SPITxRx_Setup();
+  IODIRB_Setup();
+  HAL_TIM_Base_Start_IT(&htim3);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -109,6 +125,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  SPITxRx_readIO();
+	  ReadSwitch();
 	  }
   /* USER CODE END 3 */
 }
@@ -247,6 +264,53 @@ static void MX_SPI3_Init(void)
 }
 
 /**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 16999;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 499;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None
@@ -292,6 +356,51 @@ static void MX_TIM2_Init(void)
 }
 
 /**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 16999;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 499;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -306,10 +415,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -324,6 +437,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : PD2 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
@@ -333,30 +453,163 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void SPITxRx_Setup()
+//void SPITxRx_Setup()
+//{
+////CS pulse
+//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
+//HAL_Delay(1);
+//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); // CS deSelect
+//HAL_Delay(1);
+//}
+
+void IODIRB_Setup()//at BEGIN 2
 {
-//CS pulse
-HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
-HAL_Delay(1);
-HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); // CS deSelect
-HAL_Delay(1);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+	SPITx[0] = 0b01000000;//write
+	SPITx[1] = 0x01;//IODIRB
+	SPITx[2] = 0b00000000;
+	HAL_SPI_TransmitReceive_IT(&hspi3, SPITx, SPIRx, 3);
 }
 
 void SPITxRx_readIO()
 {
-if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_2))
+	if(HAL_GPIO_ReadPin(GPIOD,GPIO_PIN_2))
+	{
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
+		if (Mode == 0)
+		{
+			SPITx[0] = 0b01000001;//read
+			SPITx[1] = 0x12;
+			SPITx[2] = 0;
+		}
+		else if(Mode == 1)
+		{
+			LED_From();
+		}
+		HAL_SPI_TransmitReceive_IT(&hspi3, SPITx, SPIRx, 3);
+	}
+}
+
+void ReadSwitch()
 {
-HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0); // CS Select
-SPITx[0] = 0b01000001;
-SPITx[1] = 0x12;
-SPITx[2] = 0;
-SPITx[3] = 0;
-HAL_SPI_TransmitReceive_IT(&hspi3, SPITx, SPIRx, 4);
+	if (SPIRx[2]==239)
+		{
+			Switch = 1;
+		}
+	else if (SPIRx[2]==223)
+		{
+			Switch = 2;
+		}
+	else if (SPIRx[2]==176)
+		{
+			Switch = 3;
+		}
+	else if (SPIRx[2]==127)
+		{
+			Switch = 4;
+		}
 }
+
+void LED_From()
+{
+	if (Switch == 1)
+		{
+			SPITx[0] = 0b01000000;//write
+			SPITx[1] = 0x15;//OLATB
+			if (LMode1 == 1)
+				{
+				SPITx[2] = 0b11111110;
+				}
+			else if (LMode1 == 2)
+				{
+				SPITx[2] = 0b11111101;
+				}
+			else if (LMode1 == 3)
+				{
+				SPITx[2] = 0b11111011;
+				}
+			else if (LMode1 == 4)
+				{
+				SPITx[2] = 0b11110111;
+				}
+			else if (LMode1 == 5)
+				{
+				SPITx[2] = 0b11101111;
+				}
+			else if (LMode1 == 6)
+				{
+				SPITx[2] = 0b11011111;
+				}
+			else if (LMode1 == 7)
+				{
+				SPITx[2] = 0b10111111;
+				}
+			else if (LMode1 == 8)
+				{
+				SPITx[2] = 0b01111111;
+				}
+		}
+		else if (Switch == 2)
+		{
+			SPITx[0] = 0b01000000;//write
+			SPITx[1] = 0x15;//OLATB
+			if (LMode1 == 1)
+				{
+				SPITx[2] = 0b00000001;
+				}
+			else if (LMode1 == 2)
+				{
+				SPITx[2] = 0b00000010;
+				}
+			else if (LMode1 == 3)
+				{
+				SPITx[2] = 0b00000100;
+				}
+			else if (LMode1 == 4)
+				{
+				SPITx[2] = 0b00001000;
+				}
+			else if (LMode1 == 5)
+				{
+				SPITx[2] = 0b00010000;
+				}
+			else if (LMode1 == 6)
+				{
+				SPITx[2] = 0b00100000;
+				}
+			else if (LMode1 == 7)
+				{
+				SPITx[2] = 0b01000000;
+				}
+			else if (LMode1 == 8)
+				{
+				SPITx[2] = 0b10000000;
+				}
+		}
+
 }
+
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if (htim == &htim3)
+	{
+		LMode1+=1;
+		if (LMode1>8)
+		{
+			LMode1 = 1;
+		}
+	}
+}
+
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
-HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); //CS dnSelect
+	Mode+=1;
+	if (Mode>1)
+	{
+		Mode = 0;
+	}
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); //CS dnSelect
 }
 /* USER CODE END 4 */
 
