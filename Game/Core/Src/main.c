@@ -56,7 +56,7 @@ uint8_t Switch = 1;
 uint8_t LMode1 = 1;
 
 int Time;
-uint32_t Random_Number[50] = {3,4,2,3,2,3,1,4,2,3,1,2,3,4,2,3,2,1,4,2,3,1,4,2,3,4,1,2,3,2,1,2,3,4,3,2,3,4,3,2,1,4,3,4,2,4,1,4,3,2} ;
+uint32_t Random_Number[50] = {3,2,2,3,2,3,1,4,2,3,1,2,3,4,2,3,2,1,4,2,3,1,4,2,3,4,1,2,3,2,1,2,3,4,3,2,3,4,3,2,1,4,3,4,2,4,1,4,3,2} ;
 int i = 0;
 int Pattern_Count = 0;
 uint32_t Pattern_Sol[50]; //correct pattern
@@ -66,6 +66,7 @@ int Numcheck_Count; // to check if you trick all the button
 int test;
 int Nub;
 int click;
+int wrong;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -574,6 +575,14 @@ void Game()
 				Switch = 1;
 				Nub = Nub + 1;
 				HAL_Delay(100);
+				if (Random_Number[Nub-1] != 2)
+					{
+					wrong = 1;
+					//State = 0;
+					//Nub = 0;
+					//Numcheck_Count = 0;
+					//i = 0;
+					}
 				}
 			else if (SPIRx[2]==223 && click == 0)
 				{
@@ -583,6 +592,14 @@ void Game()
 				Switch = 2;
 				Nub = Nub + 1;
 				HAL_Delay(100);
+				if (Random_Number[Nub-1] != 2)
+					{
+					wrong = 1;
+					//State = 0;
+					//Nub = 0;
+					//Numcheck_Count = 0;
+					//i = 0;
+					}
 				}
 			else if (SPIRx[2]==176 && click == 0)
 				{
@@ -592,17 +609,34 @@ void Game()
 				Switch = 3;
 				Nub = Nub + 1;
 				HAL_Delay(100);
+				if (Random_Number[Nub-1] != 3)
+					{
+					wrong = 1;
+					//State = 0;
+					//Nub = 0;
+					//Numcheck_Count = 0;
+					//i = 0;
+					}
 				}
 			else if (SPIRx[2]==127 && click == 0)
 				{
+				wrong = 1;
 				click = 1;
 				Pattern_Check[Nub] = 4;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 4;
 				Nub = Nub + 1;
 				HAL_Delay(100);
+				if (Random_Number[Nub-1] != 4)
+					{
+					wrong = 1;
+					//State = 0;
+					//Nub = 0;
+					//Numcheck_Count = 0;
+					//i = 0;
+					}
 				}
-			if (Nub == Numcheck_Count)
+			if (Nub > Numcheck_Count)
 			{
 				Nub = 0;
 				State = 0;
@@ -637,7 +671,7 @@ void Game()
 				SPITx[2] = 0b11111100;
 				test =4;
 			}
-			if (i == Numcheck_Count)
+			if (i == Numcheck_Count || i == Numcheck_Count -1)
 			{
 				State = 1;
 			}
@@ -729,7 +763,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if (htim == &htim3)
 	{
 		i+=1;
-		if (i > Numcheck_Count)
+		if (i >= Numcheck_Count)
 		{
 			i=0;
 		}
