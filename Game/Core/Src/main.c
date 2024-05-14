@@ -64,8 +64,7 @@ uint32_t Pattern_Check[50]; //pattern you play
 int State ; //0 for display 1 for play
 int Numcheck_Count; // to check if you trick all the button
 int test;
-int Button_Click;
-
+int Nub;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -564,68 +563,80 @@ void Game()
 		{
 			if (SPIRx[2]==239)
 				{
-				Pattern_Check[Numcheck_Count] = 1;
+				Pattern_Check[Numcheck_Count-1] = 1;
+				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 1;
-				Button_Click = Button_Click;
+				Nub = Nub + 1;
+				State = 0;
 				}
 			else if (SPIRx[2]==223)
 				{
-				Pattern_Check[Numcheck_Count] = 2;
+				Pattern_Check[Numcheck_Count-1] = 2;
+				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 2;
-				Button_Click = Button_Click;
+				Nub = Nub + 1;
+				State = 0;
 				}
 			else if (SPIRx[2]==176)
 				{
-				Pattern_Check[Numcheck_Count] = 3;
+				Pattern_Check[Numcheck_Count-1] = 3;
+				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 3;
-				Button_Click = Button_Click;
+				Nub = Nub + 1;
+				State = 0;
 				}
 			else if (SPIRx[2]==127)
 				{
-				Pattern_Check[Numcheck_Count] = 4;
+				Pattern_Check[Numcheck_Count-1] = 4;
+				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 4;
-				Button_Click = Button_Click;
+				Nub = Nub + 1;
+				State = 0;
 				}
-			if (Button_Click = Numcheck_Count +1)
+			if (Nub == Numcheck_Count)
 			{
+				Switch = 0;
 				State = 0;
 				i = 0;
 				Numcheck_Count = Numcheck_Count + 1;
 			}
 		}
-
-
 	else if (State == 0)
-	{
-		SPITx[0] = 0b01000000;//write
-		SPITx[1] = 0x15;//OLATB
-		Pattern_Sol[Numcheck_Count] = Random_Number[Numcheck_Count];
-		if (Random_Number[i] == 1)
 		{
-			SPITx[2] = 0b11111011;
-			test =1;
+			if (Nub < Numcheck_Count)
+			{
+				State = 1;
+			}
+			SPITx[0] = 0b01000000;//write
+			SPITx[1] = 0x15;//OLATB
+			if (Random_Number[i] == 1)
+			{
+				SPITx[2] = 0b00111111;
+				test =1;
 
-		}
-		else if (Random_Number[i] == 2)
-		{
-			SPITx[2] = 0b11110111;
-			test =2;
+			}
+			else if (Random_Number[i] == 2)
+			{
+				SPITx[2] = 0b11001111;
+				test =2;
 
-		}
-		else if (Random_Number[i] == 3)
-		{
-			SPITx[2] = 0b11101111;
-			test =3;
+			}
+			else if (Random_Number[i] == 3)
+			{
+				SPITx[2] = 0b11110011;
+				test =3;
 
+			}
+			else if (Random_Number[i] == 4)
+			{
+				SPITx[2] = 0b11111100;
+				test =4;
+			}
+			if (i == Numcheck_Count)
+			{
+				State = 1;
+			}
 		}
-		else if (Random_Number[i] == 4)
-		{
-			SPITx[2] = 0b11011111;
-			test =4;
-		}
-	    if (i == Numcheck_Count)
-			State = 1;
-	}
 }
 
 //void LED_From()
@@ -713,23 +724,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if (htim == &htim3)
 	{
 		i+=1;
-		if (i>Numcheck_Count)
+		if (i > Numcheck_Count)
 		{
 			i=0;
 		}
 	}
 }
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-//{
-//	if (htim == &htim3)
-//	{
-//		LMode1+=1;
-//		if (LMode1>0)
-//		{
-//			LMode1=0;
-//		}
-//	}
-//}
 
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
@@ -740,6 +740,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 	}
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1); //CS dnSelect
 }
+
 /* USER CODE END 4 */
 
 /**
