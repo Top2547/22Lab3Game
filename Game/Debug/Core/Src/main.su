@@ -9,6 +9,6 @@
 ../Core/Src/main.c:480:6:IODIRB_Setup	8	static
 ../Core/Src/main.c:489:6:SPITxRx_readIO	8	static
 ../Core/Src/main.c:560:6:Game	8	static
-../Core/Src/main.c:723:6:HAL_TIM_PeriodElapsedCallback	16	static
-../Core/Src/main.c:735:6:HAL_SPI_TxRxCpltCallback	16	static
-../Core/Src/main.c:751:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:718:6:HAL_TIM_PeriodElapsedCallback	16	static
+../Core/Src/main.c:730:6:HAL_SPI_TxRxCpltCallback	16	static
+../Core/Src/main.c:746:6:Error_Handler	4	static,ignoring_inline_asm

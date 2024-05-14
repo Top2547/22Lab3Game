@@ -563,39 +563,39 @@ void Game()
 		{
 			if (SPIRx[2]==239)
 				{
-				Pattern_Check[Numcheck_Count-1] = 1;
+				Pattern_Check[Nub] = 1;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 1;
 				Nub = Nub + 1;
-				State = 0;
+				HAL_Delay(500);
 				}
 			else if (SPIRx[2]==223)
 				{
-				Pattern_Check[Numcheck_Count-1] = 2;
+				Pattern_Check[Nub] = 2;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 2;
 				Nub = Nub + 1;
-				State = 0;
+				HAL_Delay(500);
 				}
 			else if (SPIRx[2]==176)
 				{
-				Pattern_Check[Numcheck_Count-1] = 3;
+				Pattern_Check[Nub] = 3;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 3;
 				Nub = Nub + 1;
-				State = 0;
+				HAL_Delay(500);
 				}
 			else if (SPIRx[2]==127)
 				{
-				Pattern_Check[Numcheck_Count-1] = 4;
+				Pattern_Check[Nub] = 4;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 4;
 				Nub = Nub + 1;
-				State = 0;
+				HAL_Delay(500);
 				}
 			if (Nub == Numcheck_Count)
 			{
-				Switch = 0;
+				Nub = 0;
 				State = 0;
 				i = 0;
 				Numcheck_Count = Numcheck_Count + 1;
@@ -603,11 +603,6 @@ void Game()
 		}
 	else if (State == 0)
 		{
-			if (Nub < Numcheck_Count)
-			{
-				State = 1;
-				HAL_Delay(500);
-			}
 			SPITx[0] = 0b01000000;//write
 			SPITx[1] = 0x15;//OLATB
 			if (Random_Number[i] == 1)
