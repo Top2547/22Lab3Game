@@ -64,6 +64,7 @@ uint32_t Pattern_Check[50]; //pattern you play
 int State ; //0 for display 1 for play
 int Numcheck_Count; // to check if you trick all the button
 int test;
+int Button_Click;
 
 /* USER CODE END PV */
 
@@ -564,31 +565,33 @@ void Game()
 			if (SPIRx[2]==239)
 				{
 				Pattern_Check[Numcheck_Count] = 1;
-				Numcheck_Count = Numcheck_Count + 1;
-				State = 0;
 				Switch = 1;
+				Button_Click = Button_Click;
 				}
 			else if (SPIRx[2]==223)
 				{
 				Pattern_Check[Numcheck_Count] = 2;
-				Numcheck_Count = Numcheck_Count + 1;
-				State = 0;
 				Switch = 2;
+				Button_Click = Button_Click;
 				}
 			else if (SPIRx[2]==176)
 				{
 				Pattern_Check[Numcheck_Count] = 3;
-				Numcheck_Count = Numcheck_Count + 1;
-				State = 0;
 				Switch = 3;
+				Button_Click = Button_Click;
 				}
 			else if (SPIRx[2]==127)
 				{
 				Pattern_Check[Numcheck_Count] = 4;
-				Numcheck_Count = Numcheck_Count + 1;
-				State = 0;
 				Switch = 4;
+				Button_Click = Button_Click;
 				}
+			if (Button_Click = Numcheck_Count +1)
+			{
+				State = 0;
+				i = 0;
+				Numcheck_Count = Numcheck_Count + 1;
+			}
 		}
 
 
@@ -620,7 +623,7 @@ void Game()
 			SPITx[2] = 0b11011111;
 			test =4;
 		}
-		else if (i == Numcheck_Count)
+	    if (i == Numcheck_Count)
 			State = 1;
 	}
 }
