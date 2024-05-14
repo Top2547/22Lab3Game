@@ -597,36 +597,31 @@ void Game()
 		SPITx[0] = 0b01000000;//write
 		SPITx[1] = 0x15;//OLATB
 		Pattern_Sol[Numcheck_Count] = Random_Number[Numcheck_Count];
-		for (i=0;i<=Numcheck_Count ;i++)
+		if (Random_Number[i] == 1)
 		{
-			if (Random_Number[i] == 1)
-			{
-				SPITx[2] = 0b11111011;
-				HAL_Delay(1000);
-				test =1;
+			SPITx[2] = 0b11111011;
+			test =1;
 
-			}
-			else if (Random_Number[i] == 2)
-			{
-				SPITx[2] = 0b11110111;
-				HAL_Delay(1000);
-				test =2;
-
-			}
-			else if (Random_Number[i] == 3)
-			{
-				SPITx[2] = 0b11101111;
-				HAL_Delay(1000);
-				test =3;
-
-			}
-			else if (Random_Number[i] == 4)
-			{
-				SPITx[2] = 0b11011111;
-				HAL_Delay(1000);
-				test =4;
-			}
 		}
+		else if (Random_Number[i] == 2)
+		{
+			SPITx[2] = 0b11110111;
+			test =2;
+
+		}
+		else if (Random_Number[i] == 3)
+		{
+			SPITx[2] = 0b11101111;
+			test =3;
+
+		}
+		else if (Random_Number[i] == 4)
+		{
+			SPITx[2] = 0b11011111;
+			test =4;
+		}
+		else if (i == Numcheck_Count)
+			State = 1;
 	}
 }
 
@@ -710,28 +705,28 @@ void Game()
 //}
 
 
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-//{
-//	if (htim == &htim3)
-//	{
-//		+=1;
-//		if (i>Numcheck_Count)
-//		{
-//			i=0;
-//		}
-//	}
-//}
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 	if (htim == &htim3)
 	{
-		LMode1+=1;
-		if (LMode1>0)
+		i+=1;
+		if (i>Numcheck_Count)
 		{
-			LMode1=0;
+			i=0;
 		}
 	}
 }
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//	if (htim == &htim3)
+//	{
+//		LMode1+=1;
+//		if (LMode1>0)
+//		{
+//			LMode1=0;
+//		}
+//	}
+//}
 
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
