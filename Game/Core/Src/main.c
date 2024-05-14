@@ -65,6 +65,7 @@ int State ; //0 for display 1 for play
 int Numcheck_Count; // to check if you trick all the button
 int test;
 int Nub;
+int click;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -561,37 +562,45 @@ void Game()
 {
 	if (State == 1)
 		{
-			if (SPIRx[2]==239)
+			if (SPIRx[2]==240)
+			{
+				click = 0;
+			}
+			if (SPIRx[2]==239 && click == 0)
 				{
+				click = 1;
 				Pattern_Check[Nub] = 1;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 1;
 				Nub = Nub + 1;
-				HAL_Delay(500);
+				HAL_Delay(100);
 				}
-			else if (SPIRx[2]==223)
+			else if (SPIRx[2]==223 && click == 0)
 				{
+				click = 1;
 				Pattern_Check[Nub] = 2;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 2;
 				Nub = Nub + 1;
-				HAL_Delay(500);
+				HAL_Delay(100);
 				}
-			else if (SPIRx[2]==176)
+			else if (SPIRx[2]==176 && click == 0)
 				{
+				click = 1;
 				Pattern_Check[Nub] = 3;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 3;
 				Nub = Nub + 1;
-				HAL_Delay(500);
+				HAL_Delay(100);
 				}
-			else if (SPIRx[2]==127)
+			else if (SPIRx[2]==127 && click == 0)
 				{
+				click = 1;
 				Pattern_Check[Nub] = 4;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
 				Switch = 4;
 				Nub = Nub + 1;
-				HAL_Delay(500);
+				HAL_Delay(100);
 				}
 			if (Nub == Numcheck_Count)
 			{
