@@ -56,7 +56,7 @@ uint8_t Switch = 1;
 uint8_t LMode1 = 1;
 
 int Time;
-uint32_t Random_Number[50] = {3,2,2,3,2,3,1,4,2,3,1,2,3,4,2,3,2,1,4,2,3,1,4,2,3,4,1,2,3,2,1,2,3,4,3,2,3,4,3,2,1,4,3,4,2,4,1,4,3,2} ;
+uint32_t Random_Number[50] = {3,2,3,4,2,3,1,4,2,3,1,2,3,4,2,3,2,1,4,2,3,1,4,2,3,4,1,2,3,2,1,2,3,4,3,2,3,4,3,2,1,4,3,4,2,4,1,4,3,2} ;
 int i = 0;
 int Pattern_Count = 0;
 uint32_t Pattern_Sol[50]; //correct pattern
@@ -582,6 +582,16 @@ void Game()
 					//Nub = 0;
 					//Numcheck_Count = 0;
 					//i = 0;
+					SPITx[0] = 0b01000000;//write
+					SPITx[1] = 0x15;//OLATB
+					SPITx[2] = 0b11111111;
+					HAL_Delay(800);
+					SPITx[2] = 0b00000000;
+					HAL_Delay(500);
+					SPITx[2] = 0b11111111;
+					HAL_Delay(800);
+					SPITx[2] = 0b00000000;
+					HAL_Delay(500);
 					}
 				}
 			else if (SPIRx[2]==223 && click == 0)
@@ -599,6 +609,16 @@ void Game()
 					//Nub = 0;
 					//Numcheck_Count = 0;
 					//i = 0;
+					SPITx[0] = 0b01000000;//write
+					SPITx[1] = 0x15;//OLATB
+					SPITx[2] = 0b11111111;
+					HAL_Delay(800);
+					SPITx[2] = 0b00000000;
+					HAL_Delay(500);
+					SPITx[2] = 0b11111111;
+					HAL_Delay(800);
+					SPITx[2] = 0b00000000;
+					HAL_Delay(500);
 					}
 				}
 			else if (SPIRx[2]==176 && click == 0)
@@ -616,6 +636,16 @@ void Game()
 					//Nub = 0;
 					//Numcheck_Count = 0;
 					//i = 0;
+					SPITx[0] = 0b01000000;//write
+					SPITx[1] = 0x15;//OLATB
+					SPITx[2] = 0b11111111;
+					HAL_Delay(800);
+					SPITx[2] = 0b00000000;
+					HAL_Delay(500);
+					SPITx[2] = 0b11111111;
+					HAL_Delay(800);
+					SPITx[2] = 0b00000000;
+					HAL_Delay(500);
 					}
 				}
 			else if (SPIRx[2]==127 && click == 0)
@@ -634,6 +664,16 @@ void Game()
 					//Nub = 0;
 					//Numcheck_Count = 0;
 					//i = 0;
+					SPITx[0] = 0b01000000;//write
+					SPITx[1] = 0x15;//OLATB
+					SPITx[2] = 0b11111111;
+					HAL_Delay(800);
+					SPITx[2] = 0b00000000;
+					HAL_Delay(500);
+					SPITx[2] = 0b11111111;
+					HAL_Delay(800);
+					SPITx[2] = 0b00000000;
+					HAL_Delay(500);
 					}
 				}
 			if (Nub > Numcheck_Count)
@@ -671,7 +711,7 @@ void Game()
 				SPITx[2] = 0b11111100;
 				test =4;
 			}
-			if (i == Numcheck_Count || i == Numcheck_Count -1)
+			if (i == Numcheck_Count + 1)
 			{
 				State = 1;
 			}
@@ -763,7 +803,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	if (htim == &htim3)
 	{
 		i+=1;
-		if (i >= Numcheck_Count)
+		if (i > Numcheck_Count + 1)
 		{
 			i=0;
 		}

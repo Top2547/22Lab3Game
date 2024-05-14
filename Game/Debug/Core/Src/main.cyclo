@@ -8,7 +8,7 @@
 ../Core/Src/main.c:425:13:MX_GPIO_Init	1
 ../Core/Src/main.c:482:6:IODIRB_Setup	1
 ../Core/Src/main.c:491:6:SPITxRx_readIO	4
-../Core/Src/main.c:562:6:Game	23
-../Core/Src/main.c:761:6:HAL_TIM_PeriodElapsedCallback	3
-../Core/Src/main.c:773:6:HAL_SPI_TxRxCpltCallback	2
-../Core/Src/main.c:789:6:Error_Handler	1
+../Core/Src/main.c:562:6:Game	22
+../Core/Src/main.c:801:6:HAL_TIM_PeriodElapsedCallback	3
+../Core/Src/main.c:813:6:HAL_SPI_TxRxCpltCallback	2
+../Core/Src/main.c:829:6:Error_Handler	1
