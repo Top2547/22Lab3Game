@@ -508,59 +508,15 @@ void SPITxRx_readIO()
 }
 
 
-//void ReadSwitch()
-//{
-//	if (State == 1)
-//		{
-//			if (SPIRx[2]==239)
-//				{
-//				Pattern_Check[Numcheck_Count] = 1;
-//				Numcheck_Count = Numcheck_Count + 1;
-//				State = 0;
-//				Switch = 1;
-//				}
-//			else if (SPIRx[2]==223)
-//				{
-//				Pattern_Check[Numcheck_Count] = 2;
-//				Numcheck_Count = Numcheck_Count + 1;
-//				State = 0;
-//				Switch = 2;
-//				}
-//			else if (SPIRx[2]==176)
-//				{
-//				Pattern_Check[Numcheck_Count] = 3;
-//				Numcheck_Count = Numcheck_Count + 1;
-//				State = 0;
-//				Switch = 3;
-//				}
-//			else if (SPIRx[2]==127)
-//				{
-//				Pattern_Check[Numcheck_Count] = 4;
-//				Numcheck_Count = Numcheck_Count + 1;
-//				State = 0;
-//				Switch = 4;
-//				}
-//		}
-	//	if (SPIRx[2]==239)
-	//			{
-	//				Switch = 1;
-	//			}
-	//		else if (SPIRx[2]==223)
-	//			{
-	//				Switch = 2;
-	//			}
-	//		else if (SPIRx[2]==176)
-	//			{
-	//				Switch = 3;
-	//			}
-	//		else if (SPIRx[2]==127)
-	//			{
-	//				Switch = 4;
-	//			}
-//}
-
 void Game()
 {
+	if (State == 3)
+	{
+		SPITx[0] = 0b01000000;//write
+		SPITx[1] = 0x15;//OLATB
+		SPITx[2] = 0b00000000;
+		HAL_Delay(1000);
+	}
 	if (State == 1)
 		{
 			if (SPIRx[2]==240)
@@ -578,20 +534,10 @@ void Game()
 				if (Random_Number[Nub-1] != 2)
 					{
 					wrong = 1;
-					//State = 0;
+					State = 3;
 					//Nub = 0;
 					//Numcheck_Count = 0;
 					//i = 0;
-					SPITx[0] = 0b01000000;//write
-					SPITx[1] = 0x15;//OLATB
-					SPITx[2] = 0b11111111;
-					HAL_Delay(800);
-					SPITx[2] = 0b00000000;
-					HAL_Delay(500);
-					SPITx[2] = 0b11111111;
-					HAL_Delay(800);
-					SPITx[2] = 0b00000000;
-					HAL_Delay(500);
 					}
 				}
 			else if (SPIRx[2]==223 && click == 0)
@@ -605,20 +551,10 @@ void Game()
 				if (Random_Number[Nub-1] != 2)
 					{
 					wrong = 1;
-					//State = 0;
+					State = 3;
 					//Nub = 0;
 					//Numcheck_Count = 0;
 					//i = 0;
-					SPITx[0] = 0b01000000;//write
-					SPITx[1] = 0x15;//OLATB
-					SPITx[2] = 0b11111111;
-					HAL_Delay(800);
-					SPITx[2] = 0b00000000;
-					HAL_Delay(500);
-					SPITx[2] = 0b11111111;
-					HAL_Delay(800);
-					SPITx[2] = 0b00000000;
-					HAL_Delay(500);
 					}
 				}
 			else if (SPIRx[2]==176 && click == 0)
@@ -632,25 +568,14 @@ void Game()
 				if (Random_Number[Nub-1] != 3)
 					{
 					wrong = 1;
-					//State = 0;
+					State = 3;
 					//Nub = 0;
 					//Numcheck_Count = 0;
 					//i = 0;
-					SPITx[0] = 0b01000000;//write
-					SPITx[1] = 0x15;//OLATB
-					SPITx[2] = 0b11111111;
-					HAL_Delay(800);
-					SPITx[2] = 0b00000000;
-					HAL_Delay(500);
-					SPITx[2] = 0b11111111;
-					HAL_Delay(800);
-					SPITx[2] = 0b00000000;
-					HAL_Delay(500);
 					}
 				}
 			else if (SPIRx[2]==127 && click == 0)
 				{
-				wrong = 1;
 				click = 1;
 				Pattern_Check[Nub] = 4;
 				Pattern_Sol[Numcheck_Count-1] = Random_Number[Numcheck_Count-1];
@@ -660,20 +585,10 @@ void Game()
 				if (Random_Number[Nub-1] != 4)
 					{
 					wrong = 1;
-					//State = 0;
+					State = 3;
 					//Nub = 0;
 					//Numcheck_Count = 0;
 					//i = 0;
-					SPITx[0] = 0b01000000;//write
-					SPITx[1] = 0x15;//OLATB
-					SPITx[2] = 0b11111111;
-					HAL_Delay(800);
-					SPITx[2] = 0b00000000;
-					HAL_Delay(500);
-					SPITx[2] = 0b11111111;
-					HAL_Delay(800);
-					SPITx[2] = 0b00000000;
-					HAL_Delay(500);
 					}
 				}
 			if (Nub > Numcheck_Count)
@@ -711,7 +626,7 @@ void Game()
 				SPITx[2] = 0b11111100;
 				test =4;
 			}
-			if (i == Numcheck_Count + 1)
+			if (i == Numcheck_Count+1)
 			{
 				State = 1;
 			}
