@@ -606,6 +606,7 @@ void Game()
 			if (Nub < Numcheck_Count)
 			{
 				State = 1;
+				HAL_Delay(500);
 			}
 			SPITx[0] = 0b01000000;//write
 			SPITx[1] = 0x15;//OLATB
