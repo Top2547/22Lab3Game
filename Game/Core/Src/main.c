@@ -31,7 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define EEPROM_ADDR 0b10100000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -40,6 +40,10 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+DMA_HandleTypeDef hdma_i2c1_rx;
+DMA_HandleTypeDef hdma_i2c1_tx;
+
 UART_HandleTypeDef hlpuart1;
 
 SPI_HandleTypeDef hspi3;
@@ -49,6 +53,10 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
+uint8_t eepromExampleWriteFlag = 0;
+uint8_t eepromExampleReadFlag = 0;
+uint8_t eepromDataReadBack[5];
+
 uint8_t SPIRx[10];
 uint8_t SPITx[10];
 uint8_t Mode;
@@ -72,11 +80,13 @@ int wrong;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_LPUART1_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_SPI3_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 void SPITxRx_Setup();
 void SPITxRx_readIO();
@@ -119,11 +129,13 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_LPUART1_UART_Init();
   MX_TIM2_Init();
   MX_SPI3_Init();
   MX_TIM1_Init();
   MX_TIM3_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   //  SPITxRx_Setup();//for mode 1,1
     IODIRB_Setup();
@@ -140,9 +152,11 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  SPITxRx_readIO();
-	  //ReadSwitch();
 	  Game();
 	  //Time = HAL_GetTick();
+
+	  eepromExampleReadFlag = 1;
+	  EEPROMReadExample(eepromDataReadBack, 5);
 	  }
   /* USER CODE END 3 */
 }
@@ -191,6 +205,54 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.Timing = 0x30A0A7FB;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
 }
 
 /**
@@ -418,6 +480,26 @@ static void MX_TIM3_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMAMUX1_CLK_ENABLE();
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+  /* DMA1_Channel2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -470,6 +552,22 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void EEPROMWriteExample() {
+if (eepromExampleWriteFlag && hi2c1.State == HAL_I2C_STATE_READY) {
+//static uint8_t data[5] = { 0x67, 0x62, 0x5F, 0x4E, 0x57 };
+static uint8_t data[5] = { 0x50, 0x4F, 0x4E, 0x31,0x31};
+HAL_I2C_Mem_Write_IT(&hi2c1, EEPROM_ADDR, 0x2C, I2C_MEMADD_SIZE_16BIT,data, 4);
+eepromExampleWriteFlag = 0;
+	}
+}
+
+void EEPROMReadExample(uint8_t *Rdata, uint16_t len) {
+if (eepromExampleReadFlag && hi2c1.State == HAL_I2C_STATE_READY) {
+HAL_I2C_Mem_Read_IT(&hi2c1, EEPROM_ADDR, 0x2c, I2C_MEMADD_SIZE_16BIT,Rdata, len);
+eepromExampleReadFlag = 0;
+	}
+}
+
 //void SPITxRx_Setup()
 //{
 ////CS pulse
@@ -516,6 +614,8 @@ void Game()
 		SPITx[1] = 0x15;//OLATB
 		SPITx[2] = 0b00000000;
 		HAL_Delay(1000);
+		eepromExampleWriteFlag = 1;
+		EEPROMWriteExample();
 	}
 	if (State == 1)
 		{
