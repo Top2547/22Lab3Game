@@ -55,7 +55,9 @@ TIM_HandleTypeDef htim3;
 /* USER CODE BEGIN PV */
 uint8_t eepromExampleWriteFlag = 0;
 uint8_t eepromExampleReadFlag = 0;
-uint8_t eepromDataReadBack[5];
+uint8_t eepromDataReadBack[6];
+static uint8_t data[6] = {0,0x53,0x43,0x4F,0x52,0x45};
+
 
 uint8_t SPIRx[10];
 uint8_t SPITx[10];
@@ -154,9 +156,6 @@ int main(void)
 	  SPITxRx_readIO();
 	  Game();
 	  //Time = HAL_GetTick();
-
-	  eepromExampleReadFlag = 1;
-	  EEPROMReadExample(eepromDataReadBack, 5);
 	  }
   /* USER CODE END 3 */
 }
@@ -555,8 +554,7 @@ static void MX_GPIO_Init(void)
 void EEPROMWriteExample() {
 if (eepromExampleWriteFlag && hi2c1.State == HAL_I2C_STATE_READY) {
 //static uint8_t data[5] = { 0x67, 0x62, 0x5F, 0x4E, 0x57 };
-static uint8_t data[5] = { 0x50, 0x4F, 0x4E, 0x31,0x31};
-HAL_I2C_Mem_Write_IT(&hi2c1, EEPROM_ADDR, 0x2C, I2C_MEMADD_SIZE_16BIT,data, 4);
+HAL_I2C_Mem_Write_IT(&hi2c1, EEPROM_ADDR, 0x2C, I2C_MEMADD_SIZE_16BIT,data, 6);
 eepromExampleWriteFlag = 0;
 	}
 }
@@ -614,8 +612,11 @@ void Game()
 		SPITx[1] = 0x15;//OLATB
 		SPITx[2] = 0b00000000;
 		HAL_Delay(1000);
-		eepromExampleWriteFlag = 1;
-		EEPROMWriteExample();
+//		eepromExampleWriteFlag = 1;
+//		EEPROMWriteExample();
+		eepromExampleReadFlag = 1;
+		EEPROMReadExample(eepromDataReadBack,6);
+
 	}
 	if (State == 1)
 		{
@@ -731,6 +732,9 @@ void Game()
 				State = 1;
 			}
 		}
+	data[0] = Numcheck_Count;
+	eepromExampleWriteFlag = 1;
+	EEPROMWriteExample();
 }
 
 //void LED_From()
