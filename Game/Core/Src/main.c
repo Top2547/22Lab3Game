@@ -624,7 +624,7 @@ void Game()
 			{
 				click = 0;
 			}
-			if (SPIRx[2]==239 && click == 0)
+			if (SPIRx[2]==224 && click == 0)
 				{
 				click = 1;
 				Pattern_Check[Nub] = 1;
@@ -641,7 +641,7 @@ void Game()
 					//i = 0;
 					}
 				}
-			else if (SPIRx[2]==223 && click == 0)
+			else if (SPIRx[2]==208 && click == 0)
 				{
 				click = 1;
 				Pattern_Check[Nub] = 2;
@@ -658,7 +658,7 @@ void Game()
 					//i = 0;
 					}
 				}
-			else if (SPIRx[2]==176 && click == 0)
+			else if (SPIRx[2]==112 && click == 0)
 				{
 				click = 1;
 				Pattern_Check[Nub] = 3;

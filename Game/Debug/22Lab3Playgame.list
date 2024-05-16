@@ -1644,10 +1644,10 @@ void Game()
  8000c6c:	2200      	movs	r2, #0
  8000c6e:	601a      	str	r2, [r3, #0]
 			}
-			if (SPIRx[2]==239 && click == 0)
+			if (SPIRx[2]==224 && click == 0)
  8000c70:	4b8f      	ldr	r3, [pc, #572]	; (8000eb0 <Game+0x28c>)
  8000c72:	789b      	ldrb	r3, [r3, #2]
- 8000c74:	2bef      	cmp	r3, #239	; 0xef
+ 8000c74:	2be0      	cmp	r3, #224	; 0xe0
  8000c76:	d133      	bne.n	8000ce0 <Game+0xbc>
  8000c78:	4b8e      	ldr	r3, [pc, #568]	; (8000eb4 <Game+0x290>)
  8000c7a:	681b      	ldr	r3, [r3, #0]
@@ -1712,10 +1712,10 @@ void Game()
 					//i = 0;
 					}
 				}
-			else if (SPIRx[2]==223 && click == 0)
+			else if (SPIRx[2]==208 && click == 0)
  8000ce0:	4b73      	ldr	r3, [pc, #460]	; (8000eb0 <Game+0x28c>)
  8000ce2:	789b      	ldrb	r3, [r3, #2]
- 8000ce4:	2bdf      	cmp	r3, #223	; 0xdf
+ 8000ce4:	2bd0      	cmp	r3, #208	; 0xd0
  8000ce6:	d132      	bne.n	8000d4e <Game+0x12a>
  8000ce8:	4b72      	ldr	r3, [pc, #456]	; (8000eb4 <Game+0x290>)
  8000cea:	681b      	ldr	r3, [r3, #0]
@@ -1780,10 +1780,10 @@ void Game()
 					//i = 0;
 					}
 				}
-			else if (SPIRx[2]==176 && click == 0)
+			else if (SPIRx[2]==112 && click == 0)
  8000d4e:	4b58      	ldr	r3, [pc, #352]	; (8000eb0 <Game+0x28c>)
  8000d50:	789b      	ldrb	r3, [r3, #2]
- 8000d52:	2bb0      	cmp	r3, #176	; 0xb0
+ 8000d52:	2b70      	cmp	r3, #112	; 0x70
  8000d54:	d132      	bne.n	8000dbc <Game+0x198>
  8000d56:	4b57      	ldr	r3, [pc, #348]	; (8000eb4 <Game+0x290>)
  8000d58:	681b      	ldr	r3, [r3, #0]
